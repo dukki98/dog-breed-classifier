@@ -192,7 +192,9 @@ Skripta pre upisa proverava da nijedan `id` i nijedan dHash nisu u dva skupa i d
 svih 120 rasa. Ako provera ne prođe, prekida rad.
 
 **Ponovljivost:** posle drugog pokretanja `make_splits.py` SHA-256 sve četiri datoteke u `splits/`
-su identične prvom.
+su identične prvom. Git na Windows-u (`core.autocrlf=true`) bi pri checkout-u promenio krajeve
+redova u CRLF i fajlovi više ne bi bili isti bajt po bajt. Zato `.gitattributes` za `splits/*.csv`
+propisuje LF. Provereno: posle brisanja i ponovnog checkout-a SHA-256 su isti kao posle pokretanja skripte.
 
 Vreme na laptopu: `analyze_data.py` 69 s (dekodira svih 10.222 slike), `make_splits.py` 18 s.
 
