@@ -1,0 +1,10 @@
+# Zavisnosti projekta, osim PyTorch-a (on je u requirements-torch.txt).
+# Instalacija, sa aktiviranim .venv:
+#   python -m pip install -r requirements.txt
+#
+# Tačne verzije, da bi rezultati mogli da se ponove.
+kaggle==2.2.5          # preuzimanje podataka sa Kaggle-a
+six==1.17.0            # kaggle 2.2.5 ga koristi, ali ga ne navodi u zavisnostima
+pandas==3.1.1          # tabele (oznake, statistike, podela)
+scikit-learn==1.9.1    # stratifikovana podela, kasnije metrike
+matplotlib==3.11.2     # grafikoni za dokumentaciju

@@ -1,0 +1,4 @@
+# Podela mora biti ista bajt po bajt na svakom računaru, pa Git ne sme da menja
+# krajeve redova (na Windows-u sa core.autocrlf=true bi ih pri checkout-u promenio u CRLF).
+# make_splits.py upisuje LF.
+splits/*.csv text eol=lf
