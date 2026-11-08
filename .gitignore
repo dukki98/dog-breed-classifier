@@ -218,3 +218,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# --- Projekat ---
+# Podaci, checkpoint-i modela i logovi treninga ne idu u git (preveliki su).
+data/
+checkpoints/
+runs/

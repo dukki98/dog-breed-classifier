@@ -1,0 +1,10 @@
+# PyTorch sa CUDA 13.2 (Windows, Python 3.13).
+# Instalacija, sa aktiviranim .venv:
+#   python -m pip install -r requirements-torch.txt
+#
+# Zašto baš ovako, objašnjeno je u docs/00-setup.md:
+# - poseban indeks, jer PyPI za Windows nudi samo CPU verziju PyTorch-a
+# - tačne verzije, jer torchvision mora da odgovara verziji torch-a
+--index-url https://download.pytorch.org/whl/cu132
+torch==2.14.1
+torchvision==0.29.1
