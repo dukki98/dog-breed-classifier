@@ -13,7 +13,7 @@ Projekat je rađen po fazama. Svaka faza ima svoj PR i dokument u [`docs/`](docs
 
 | Faza | Opis | Status |
 |---|---|---|
-| 0 | Okruženje, provera GPU-a, struktura repoa ([docs](docs/00-setup.md)) | u toku |
+| 0 | Okruženje, provera GPU-a, struktura repoa ([docs](docs/00-setup.md)) | završena |
 | 1 | Podaci: preuzimanje, analiza, podela na train/val | — |
 | 2 | Polazni model: fine-tuning, top-1 i top-3 tačnost | — |
 | 3 | Augmentacije, raspored stope učenja, BF16, praćenje eksperimenata | — |
