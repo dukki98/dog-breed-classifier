@@ -5,8 +5,15 @@ Uputstva za Claude u ovom repozitorijumu. Odgovaraj na srpskom (latinica).
 ## O projektu
 
 Klasifikator rasa pasa: za fotografiju psa vraća **3 najverovatnije rase** od 120
-(Kaggle „Dog Breed Identification“, ~10.000 slika za trening). Model mora biti mali i brz,
+(Kaggle „Dog Breed Identification“, ~10.000 slika za trening). Sistem mora biti mali i brz,
 a da radi na laptopu autora (vidi „Hardver“).
+
+Sistem ima dva koraka:
+1. **Detektor pasa:** gotov model treniran na COCO skupu, bez doučavanja. Pronalazi psa, i kad ih ima više,
+   uzima okvir u koji je najsigurniji. Pas se iseca iz originalne slike i tek onda se smanjuje.
+2. **Klasifikator rasa:** trenira se **od nule**, bez ImageNet težina. ImageNet-1k ima svih 120 naših rasa
+   kao klase, a naš skup je izveden iz njega, pa bi ImageNet težine ulepšale tačnost na test skupu
+   (curenje podataka, vidi `docs/01-podaci.md`).
 
 Projekat služi i za učenje i kao priprema za razgovor za AI praksu. Autor mora da razume
 svaku odluku i da može da je objasni.
@@ -30,7 +37,8 @@ svaku odluku i da može da je objasni.
 - Drajver 610.88, podržava CUDA do 13.3. CUDA Toolkit nije instaliran i nije potreban, jer PyTorch donosi svoj CUDA runtime.
 - Trening: mešovita preciznost **BF16** (`torch.autocast(device_type="cuda", dtype=torch.bfloat16)`), bez GradScaler-a
 - Inference: **FP16**, a INT8 kao opcioni napredni korak (faza 6)
-- Cilj: model sa < 30M parametara. Kod mora da stane u 6 GB VRAM-a, pa pazi na batch size i rezoluciju.
+- Cilj: ceo sistem (detektor + klasifikator) sa < 50M parametara. Kod mora da stane u 6 GB VRAM-a
+  (posle pokretanja CUDA-e slobodno je ~5 GiB), pa pazi na batch size i rezoluciju.
 - Trening pokretati dok je laptop na punjaču.
 
 ## Okruženje
