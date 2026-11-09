@@ -3,7 +3,7 @@
 Model koji za fotografiju psa prepoznaje rasu i vraća **3 najverovatnije rase** od 120.
 
 Pravljen je da radi na laptopu sa **RTX 3060 (6 GB VRAM)**:
-- mali model (< 30M parametara)
+- mali sistem od dva koraka: gotov detektor pasa, pa klasifikator rasa treniran od nule, ukupno < 50M parametara
 - trening u mešovitoj preciznosti BF16
 - inference u FP16, uz opcionu INT8 kvantizaciju
 
@@ -15,8 +15,8 @@ Projekat je rađen po fazama. Svaka faza ima svoj PR i dokument u [`docs/`](docs
 |---|---|---|
 | 0 | Okruženje, provera GPU-a, struktura repoa ([docs](docs/00-setup.md)) | završena |
 | 1 | Podaci: preuzimanje, analiza, podela na train/val/test ([docs](docs/01-podaci.md)) | završena |
-| 2 | Polazni model: fine-tuning, top-1 i top-3 tačnost | — |
-| 3 | Augmentacije, raspored stope učenja, BF16, praćenje eksperimenata | — |
+| 2 | Polazni model: detektor pasa i klasifikator od nule, top-1 i top-3 tačnost ([docs](docs/02-polazni-model.md)) | završena |
+| 3 | Augmentacije, raspored stope učenja, poređenje BF16 i FP32, praćenje eksperimenata | — |
 | 4 | Pretraga hiperparametara (Optuna) | — |
 | 5 | Analiza grešaka: koje rase model meša | — |
 | 6 | Izvoz u ONNX, FP16/INT8, merenje brzine i VRAM-a | — |
@@ -25,8 +25,8 @@ Projekat je rađen po fazama. Svaka faza ima svoj PR i dokument u [`docs/`](docs
 
 ## Brzi početak (Windows, cmd)
 
-Detaljna uputstva i objašnjenja su u [`docs/00-setup.md`](docs/00-setup.md) (okruženje)
-i [`docs/01-podaci.md`](docs/01-podaci.md) (podaci).
+Detaljna uputstva i objašnjenja su u [`docs/00-setup.md`](docs/00-setup.md) (okruženje),
+[`docs/01-podaci.md`](docs/01-podaci.md) (podaci) i [`docs/02-polazni-model.md`](docs/02-polazni-model.md) (model).
 
 ```bat
 git clone https://github.com/dukki98/dog-breed-classifier.git
@@ -43,6 +43,11 @@ kaggle auth login
 kaggle competitions download -c dog-breed-identification -p data\raw
 tar -xf data\raw\dog-breed-identification.zip -C data\raw
 python scripts\analyze_data.py
+
+rem Polazni model: detektor, keš isečaka, trening (laptop na punjaču)
+python scripts\detect_dogs.py
+python scripts\build_cache.py
+python scripts\train.py --seed 42
 ```
 
 ## Struktura
@@ -50,14 +55,24 @@ python scripts\analyze_data.py
 ```
 dog-breed-classifier/
 ├── CLAUDE.md               uputstva za Claude (način rada, hardver, konvencije)
-├── data/                   slike sa Kaggle-a (nije u git-u)
+├── checkpoints/            istrenirani modeli (nije u git-u)
+├── data/                   slike, detekcije i keš isečaka (nije u git-u)
 ├── docs/                   dokument za svaku fazu: odluke, rezultati, naučeno
 │   └── img/                grafikoni za dokumentaciju
 ├── scripts/
 │   ├── check_gpu.py        provera GPU-a i brzine množenja matrica (FP32/TF32/BF16)
 │   ├── analyze_data.py     analiza skupa: rase, veličine slika, duplikati
 │   ├── image_hash.py       perceptualni hash (dHash) za pronalaženje istih slika
-│   └── make_splits.py      podela na train/val/test (70/15/15), bez duplikata
+│   ├── make_splits.py      podela na train/val/test (70/15/15), bez duplikata
+│   ├── preprocess.py       priprema slike: izbor okvira psa, kvadrat, dopuna, 224 px
+│   ├── detect_dogs.py      gotov COCO detektor na svim slikama
+│   ├── analyze_detections.py  brojevi o detekcijama, dopuni i odsecanju
+│   ├── build_cache.py      keš isečaka 224×224 (uint8 .npy)
+│   ├── preview_crops.py    kontakt listovi za vizuelnu proveru isečaka
+│   ├── train.py            trening ResNet-18 od nule (BF16)
+│   ├── plot_training.py    krive učenja za više seed-ova
+│   └── imagenet_baseline.py  koliko gotov ImageNet model zna naše rase (samo poređenje)
+├── runs/                   logovi treninga (nije u git-u)
 ├── splits/                 podela: train.csv, val.csv, test.csv, excluded.csv (u git-u)
 ├── requirements-torch.txt  PyTorch sa CUDA 13.2
 └── requirements.txt        ostale zavisnosti (kaggle, pandas, scikit-learn, matplotlib)
